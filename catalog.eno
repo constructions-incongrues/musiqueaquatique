@@ -6,7 +6,7 @@ title: Musique Aquatique
 Présentation du site.
 -- synopsis
 
-base_url: https://constructions-incongrues.github.io/furrcamp/
+base_url: https://musiqueaquatique.interzone.network
 language: fr
 
 embedding: disabled
@@ -15,3 +15,10 @@ m3u: disabled
 opengraph: enabled
 release_download_access: free
 release_extras: separate
+
+theme:
+    accent_brightening = 100
+    accent_hue = 208
+    background_alpha = 0
+    base_chroma = 100
+    base_hue = 275
