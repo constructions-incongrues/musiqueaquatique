@@ -1,0 +1,58 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: sudo apt update && sudo apt install -y gdebi-core && wget https://simonrepp.com/faircamp/packages/faircamp_1.3.0-1+deb12_amd64.deb && sudo gdebi -n faircamp_1.3.0-1+deb12_amd64.deb
+
+      - name: Restore .faircamp_cache
+        id: cache-faircamp-restore
+        uses: actions/cache/restore@v4
+        with:
+          path: |
+            .faircamp_cache
+          key: ${{ runner.os }}-faircamp
+
+      - name: Build the site
+        run: faircamp
+
+      - name: Save .faircamp_cache
+        id: cache-faircamp-save
+        uses: actions/cache/save@v4
+        with:
+          path: |
+            .faircamp_cache
+          key: ${{ steps.cache-faircamp-restore.outputs.cache-primary-key }}
+
+      - name: Upload .faircamp_build
+        id: deployment
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: .faircamp_build/
+
+  deploy:
+    environment:
+      name: "github-pages"
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
